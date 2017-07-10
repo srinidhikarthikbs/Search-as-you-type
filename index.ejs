@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html ng-app="irhw5">
+<head>
+	<meta charset="utf-8">
+	<title>Spellcheck and Auto-complete</title>
+	<link href="//netdna.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+	<style>
+		.typeahead-demo .custom-popup-wrapper {
+			position: absolute;
+			top: 100%;
+			left: 0;
+			z-index: 1000;
+			display: none;
+			background-color: #f9f9f9;
+		}
+
+		.typeahead-demo .custom-popup-wrapper > .message {
+			padding: 10px 20px;
+			border-bottom: 1px solid #ddd;
+			color: #868686;
+		}
+
+		.typeahead-demo .custom-popup-wrapper > .dropdown-menu {
+			position: static;
+			float: none;
+			display: block;
+			min-width: 160px;
+			background-color: transparent;
+			border: none;
+			border-radius: 0;
+			box-shadow: none;
+		}
+		
+	</style>
+</head>
+<body ng-controller="spellauto">
+
+	<form accept-charset="utf-8" method="get" onsubmit="return false;">
+		<label for="q">Search:</label>
+		<input id="q" name="q" type="text" ng-model="q" placeholder="Enter your search query" uib-typeahead="word for word in getSuggestions($viewValue)" class="form-control" ng-paste="handleSubmit()" ng-keypress="handleSubmit()" style="width: 200px;" ng-change="handleSubmit()" autocomplete="off" required>
+		<select name="index_method" id="index_method" ng-model="index_method" required>
+			<option name="lucene" value="Lucene" checked>Lucene</option>
+			<option name="pagerank" value="PageRank">PageRank</option>
+		</select>
+
+		<input type="submit" ng-click="handleSubmit()"/> 
+	</form>
+
+	<div ng-show="display_corrected_query===true">
+	</br>Showing results for <a ng-click="makeQuery(corrected_query)">{{corrected_query}}</a>
+</br></br>
+Search instead for <a ng-click="display_corrected_query = false;makeQuery(q);">{{q}}</a></br>
+</div>
+
+<ol ng-show='corrected_query!=="*:*"'>
+	<li ng-repeat="doc in docs">
+		<table style="border: 1px solid black; text-align: left">
+			<tr>
+				<td>
+					<a target="_blank" href='{{getFileName(doc.id.split("/")[doc.id.split("/").length-1])}}'>{{doc.title[0] ? doc.title[0] : doc.title}}</a>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<a target="_blank" href='{{getFileName(doc.id.split("/")[doc.id.split("/").length-1])}}'>{{getFileName(doc.id.split("/")[doc.id.split("/").length-1])}}</a>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					{{doc.id.split("/")[doc.id.split("/").length-1]}}
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					{{doc.description[0] ? doc.description[0]:doc.description }}
+				</td>
+			</tr>
+		</table>
+	</li>
+</ol>
+<div ng-show='! docs.length>0 || corrected_query==="*:*"'>
+	No results at the moment
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-sanitize.js"></script>
+<script src="//angular-ui.github.io/bootstrap/ui-bootstrap-tpls-2.5.0.js"></script>
+<script src="script.js" type="text/javascript"></script>
+
+</body>
+</html>
